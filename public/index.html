@@ -4,9 +4,14 @@
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ANONYMOUS</title>
+
+    <meta name="theme-color" content="#00ffe1">
+
+    <link rel="manifest" href="manifest.json">
 
     <link rel="stylesheet" href="style.css">
 
@@ -14,23 +19,119 @@
 
 <body>
 
-    <div class="main-container">
+    <!-- LOGIN / SIGNUP -->
 
-        <h1>ANONYMOUS</h1>
+    <div id="auth-screen">
 
-        <h2 id="user-id"></h2>
+        <div class="auth-box">
 
-        <div class="online-users">
-            Users Online: <span id="online-count">0</span>
+            <h1>ANONYMOUS</h1>
+
+            <!-- REGISTER -->
+
+            <div id="register-page">
+
+                <h2>Create Account</h2>
+
+                <input type="text" id="register-username" placeholder="Username">
+
+                <input type="password" id="register-password" placeholder="Password">
+
+                <button onclick="createAccount()">Create Account</button>
+
+                <p>
+                    Already have account?
+                    <span onclick="showLogin()">Login</span>
+                </p>
+
+            </div>
+
+            <!-- LOGIN -->
+
+            <div id="login-page" style="display:none;">
+
+                <h2>Login</h2>
+
+                <input type="text" id="login-username" placeholder="Username">
+
+                <input type="password" id="login-password" placeholder="Password">
+
+                <button onclick="login()">Login</button>
+
+                <p>
+                    No account?
+                    <span onclick="showRegister()">Register</span>
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="chat-box"></div>
+    </div>
 
-        <div class="input-area">
+    <!-- CHAT -->
 
-            <input type="text" id="message-input" placeholder="Type your message...">
+    <div id="chat-screen" style="display:none;">
 
-            <button onclick="sendMessage()">Send</button>
+        <!-- SIDEBAR -->
+
+        <div class="sidebar">
+
+            <div class="logo">
+                ANONYMOUS
+            </div>
+
+            <div class="search-box">
+
+                <input type="text" placeholder="Search user...">
+
+            </div>
+
+            <div class="online-users">
+
+                <h3>Online Users</h3>
+
+                <div id="users-container"></div>
+
+            </div>
+
+        </div>
+
+        <!-- CHAT AREA -->
+
+        <div class="chat-area">
+
+            <div class="chat-header">
+
+                <div>
+
+                    <h2 id="current-user"></h2>
+
+                    <span id="typing-status"></span>
+
+                </div>
+
+                <button id="install-btn">
+                    Install App
+                </button>
+
+            </div>
+
+            <!-- MESSAGES -->
+
+            <div class="messages" id="messages"></div>
+
+            <!-- INPUT -->
+
+            <div class="message-input-area">
+
+                <input type="text" id="message-input" placeholder="Type message...">
+
+                <button id="send-btn">
+                    Send
+                </button>
+
+            </div>
 
         </div>
 
@@ -41,5 +142,4 @@
     <script src="app.js"></script>
 
 </body>
-
 </html>

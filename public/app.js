@@ -1,85 +1,120 @@
 const socket = io();
 
-let username = localStorage.getItem("anonymousID");
+let currentUser = "";
 
-if(!username){
+const messages = document.getElementById("messages");
 
-    const randomNumber = Math.floor(Math.random() * 99999);
+const input = document.getElementById("message-input");
 
-    username = "ANON_" + randomNumber;
+const sendBtn = document.getElementById("send-btn");
 
-    localStorage.setItem("anonymousID", username);
+const usersContainer = document.getElementById("users-container");
+
+/* LOGIN */
+
+function showLogin(){
+
+    document.getElementById("register-page").style.display = "none";
+
+    document.getElementById("login-page").style.display = "block";
 
 }
 
-document.getElementById("user-id").innerText = username;
+function showRegister(){
 
-socket.emit("user-joined", username);
+    document.getElementById("login-page").style.display = "none";
 
-function sendMessage(){
+    document.getElementById("register-page").style.display = "block";
 
-    const input = document.getElementById("message-input");
+}
 
-    const messageText = input.value;
+async function createAccount(){
 
-    if(messageText.trim() === ""){
-        return;
-    }
+    const username = document.getElementById("register-username").value;
 
-    socket.emit("send-message", {
-        user: username,
-        text: messageText
+    const password = document.getElementById("register-password").value;
+
+    const response = await fetch("/register", {
+
+        method:"POST",
+
+        headers:{
+
+            "Content-Type":"application/json"
+
+        },
+
+        body:JSON.stringify({
+
+            username,
+            password
+
+        })
+
     });
 
-    input.value = "";
+    const data = await response.json();
 
-}
+    alert(data.message);
 
-socket.on("receive-message", (data) => {
+    if(data.success){
 
-    const chatBox = document.querySelector(".chat-box");
-
-    const newMessage = document.createElement("div");
-
-    newMessage.classList.add("message");
-
-    if(data.user === username){
-
-        newMessage.classList.add("my-message");
+        showLogin();
 
     }
 
-    newMessage.innerText = data.user + ": " + data.text;
+}
 
-    chatBox.appendChild(newMessage);
+async function login(){
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+    const username = document.getElementById("login-username").value;
 
-});
+    const password = document.getElementById("login-password").value;
 
-socket.on("system-message", (message) => {
+    const response = await fetch("/login", {
 
-    const chatBox = document.querySelector(".chat-box");
+        method:"POST",
 
-    const newMessage = document.createElement("div");
+        headers:{
 
-    newMessage.classList.add("system-message");
+            "Content-Type":"application/json"
 
-    newMessage.innerText = message;
+        },
 
-    chatBox.appendChild(newMessage);
+        body:JSON.stringify({
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+            username,
+            password
 
-});
+        })
 
-socket.on("online-users", (count) => {
+    });
 
-    document.getElementById("online-count").innerText = count;
+    const data = await response.json();
 
-});
+    alert(data.message);
 
-document.getElementById("message-input").addEventListener("keypress", function(event){
+    if(data.success){
+
+        currentUser = username;
+
+        document.getElementById("auth-screen").style.display = "none";
+
+        document.getElementById("chat-screen").style.display = "flex";
+
+        document.getElementById("current-user").innerText = currentUser;
+
+        socket.emit("user-joined", currentUser);
+
+    }
+
+}
+
+/* SEND */
+
+sendBtn.addEventListener("click", sendMessage);
+
+input.addEventListener("keypress", function(event){
 
     if(event.key === "Enter"){
 
@@ -88,3 +123,156 @@ document.getElementById("message-input").addEventListener("keypress", function(e
     }
 
 });
+
+function sendMessage(){
+
+    const text = input.value;
+
+    if(text.trim() === "") return;
+
+    socket.emit("send-message", {
+
+        user:currentUser,
+
+        text:text
+
+    });
+
+    input.value = "";
+
+}
+
+/* RECEIVE */
+
+socket.on("receive-message", (data) => {
+
+    const div = document.createElement("div");
+
+    div.classList.add("message");
+
+    if(data.user === currentUser){
+
+        div.classList.add("my-message");
+
+    }else{
+
+        div.classList.add("other-message");
+
+    }
+
+    div.innerHTML = `
+
+        <strong>${data.user}</strong><br>
+        ${data.text}
+
+    `;
+
+    messages.appendChild(div);
+
+    messages.scrollTop = messages.scrollHeight;
+
+});
+
+/* USERS */
+
+socket.on("user-list", (users) => {
+
+    usersContainer.innerHTML = "";
+
+    users.forEach((user) => {
+
+        const div = document.createElement("div");
+
+        div.classList.add("chat-user");
+
+        div.innerHTML = `
+
+            <div class="avatar">
+
+                ${user.charAt(0).toUpperCase()}
+
+            </div>
+
+            <div>
+
+                <h4>${user}</h4>
+
+                <p>Online</p>
+
+            </div>
+
+        `;
+
+        usersContainer.appendChild(div);
+
+    });
+
+});
+
+/* SYSTEM */
+
+socket.on("system-message", (message) => {
+
+    const div = document.createElement("div");
+
+    div.classList.add("system-message");
+
+    div.innerText = message;
+
+    messages.appendChild(div);
+
+});
+
+/* TYPING */
+
+input.addEventListener("input", () => {
+
+    socket.emit("typing", currentUser);
+
+});
+
+socket.on("typing-status", (msg) => {
+
+    document.getElementById("typing-status").innerText = msg;
+
+    setTimeout(() => {
+
+        document.getElementById("typing-status").innerText = "";
+
+    }, 1000);
+
+});
+
+/* PWA */
+
+let deferredPrompt;
+
+const installBtn = document.getElementById("install-btn");
+
+window.addEventListener("beforeinstallprompt", (e) => {
+
+    e.preventDefault();
+
+    deferredPrompt = e;
+
+});
+
+installBtn.addEventListener("click", async () => {
+
+    if(deferredPrompt){
+
+        deferredPrompt.prompt();
+
+        deferredPrompt = null;
+
+    }
+
+});
+
+/* SERVICE WORKER */
+
+if("serviceWorker" in navigator){
+
+    navigator.serviceWorker.register("service-worker.js");
+
+}

@@ -1,7 +1,11 @@
-body{
+*{
 
     margin:0;
     padding:0;
+    box-sizing:border-box;
+}
+
+body{
 
     background:#0b0f17;
 
@@ -9,77 +13,276 @@ body{
 
     color:white;
 
+    height:100vh;
+
+    overflow:hidden;
+}
+
+/* AUTH */
+
+#auth-screen{
+
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+.auth-box{
+
+    width:400px;
+
+    background:#121826;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:0 0 20px rgba(0,255,225,0.2);
+}
+
+.auth-box h1{
+
+    text-align:center;
+
+    color:#00ffe1;
+
+    margin-bottom:20px;
+}
+
+.auth-box h2{
+
+    margin-bottom:20px;
+}
+
+.auth-box input{
+
+    width:100%;
+
+    padding:14px;
+
+    margin-bottom:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#1d2638;
+
+    color:white;
+
+    outline:none;
+}
+
+.auth-box button{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#00ffe1;
+
+    color:black;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.auth-box p{
+
+    margin-top:15px;
+
+    text-align:center;
+}
+
+.auth-box span{
+
+    color:#00ffe1;
+
+    cursor:pointer;
+}
+
+/* CHAT */
+
+#chat-screen{
+
+    display:flex;
+
+    height:100vh;
+}
+
+.sidebar{
+
+    width:320px;
+
+    background:#121826;
+
+    border-right:1px solid rgba(255,255,255,0.05);
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.logo{
+
+    padding:25px;
+
+    font-size:30px;
+
+    color:#00ffe1;
+
+    font-weight:bold;
+}
+
+.search-box{
+
+    padding:0 15px 15px;
+}
+
+.search-box input{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#1d2638;
+
+    color:white;
+}
+
+.online-users{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:15px;
+}
+
+.online-users h3{
+
+    margin-bottom:15px;
+}
+
+.chat-user{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#1d2638;
+
+    margin-bottom:10px;
+}
+
+.avatar{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    background:#00ffe1;
+
+    color:black;
+
     display:flex;
 
     justify-content:center;
 
     align-items:center;
 
-    height:100vh;
+    font-weight:bold;
 }
 
-.main-container{
+.chat-area{
 
-    width:550px;
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
 }
 
-h1{
+.chat-header{
 
-    text-align:center;
+    height:80px;
+
+    border-bottom:1px solid rgba(255,255,255,0.05);
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 20px;
+}
+
+.chat-header span{
 
     color:#00ffe1;
-
-    text-shadow:0 0 20px #00ffe1;
-
-    margin-bottom:10px;
 }
 
-#user-id{
+#install-btn{
 
-    text-align:center;
+    padding:12px 20px;
 
-    color:#00ffe1;
-
-    margin-bottom:15px;
-}
-
-.online-users{
-
-    text-align:center;
-
-    margin-bottom:15px;
-
-    color:#bdbdbd;
-}
-
-.chat-box{
-
-    height:400px;
-
-    background:#121826;
+    border:none;
 
     border-radius:12px;
 
-    padding:15px;
+    background:#00ffe1;
+
+    color:black;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.messages{
+
+    flex:1;
 
     overflow-y:auto;
+
+    padding:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
 }
 
 .message{
 
-    background:#1d2638;
+    max-width:300px;
 
-    padding:10px;
+    padding:14px;
 
-    border-radius:10px;
-
-    margin-bottom:10px;
-
-    width:fit-content;
-
-    max-width:80%;
-
-    word-wrap:break-word;
+    border-radius:16px;
 }
 
 .my-message{
@@ -91,54 +294,55 @@ h1{
     margin-left:auto;
 }
 
+.other-message{
+
+    background:#1d2638;
+}
+
 .system-message{
-
-    background:transparent;
-
-    color:#888;
 
     text-align:center;
 
-    width:100%;
+    color:#888;
 }
 
-.input-area{
+.message-input-area{
 
     display:flex;
 
     gap:10px;
 
-    margin-top:15px;
+    padding:20px;
+
+    border-top:1px solid rgba(255,255,255,0.05);
 }
 
-input{
+.message-input-area input{
 
     flex:1;
 
-    padding:12px;
+    padding:14px;
 
     border:none;
 
-    border-radius:10px;
+    border-radius:12px;
 
     background:#1d2638;
 
     color:white;
-
-    outline:none;
-
-    font-size:15px;
 }
 
-button{
+.message-input-area button{
 
-    padding:12px 20px;
+    padding:14px 20px;
 
     border:none;
 
-    border-radius:10px;
+    border-radius:12px;
 
     background:#00ffe1;
+
+    color:black;
 
     font-weight:bold;
 
