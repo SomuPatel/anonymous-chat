@@ -1,14 +1,16 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const http = require("http");
 
 const { Server } = require("socket.io");
 
-const path = require("path");
-
 const mongoose = require("mongoose");
 
 const bcrypt = require("bcrypt");
+
+const path = require("path");
 
 const app = express();
 
@@ -20,17 +22,39 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../public")));
 
-mongoose.connect("mongodb+srv://Somu_2003:Somu_2003@cluster0.vj7r9er.mongodb.net/?appName=Cluster0")
+/* =========================
+   MONGODB
+========================= */
+
+mongoose.connect(process.env.MONGO_URI)
+
 .then(() => {
 
     console.log("MongoDB Connected");
 
 })
+
 .catch((err) => {
 
     console.log(err);
 
 });
+
+.then(() => {
+
+    console.log("MongoDB Connected");
+
+})
+
+.catch((err) => {
+
+    console.log(err);
+
+});
+
+/* =========================
+   USER MODEL
+========================= */
 
 const userSchema = new mongoose.Schema({
 
@@ -41,6 +65,10 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+/* =========================
+   REGISTER
+========================= */
 
 app.post("/register", async (req, res) => {
 
@@ -82,6 +110,10 @@ app.post("/register", async (req, res) => {
 
 });
 
+/* =========================
+   LOGIN
+========================= */
+
 app.post("/login", async (req, res) => {
 
     const { username, password } = req.body;
@@ -108,7 +140,7 @@ app.post("/login", async (req, res) => {
 
             success:false,
 
-            message:"Wrong password"
+            message:"Wrong Password"
 
         });
 
@@ -124,31 +156,21 @@ app.post("/login", async (req, res) => {
 
 });
 
-let onlineUsers = 0;
+/* =========================
+   SOCKET
+========================= */
 
 let connectedUsers = {};
 
 io.on("connection", (socket) => {
 
-    onlineUsers++;
-
-    io.emit("online-users", onlineUsers);
-
     socket.on("user-joined", (username) => {
-
-        socket.username = username;
 
         connectedUsers[username] = socket.id;
 
-        io.emit("system-message", `${username} joined the chat`);
-
         io.emit("user-list", Object.keys(connectedUsers));
 
-    });
-
-    socket.on("typing", (username) => {
-
-        socket.broadcast.emit("typing-status", `${username} is typing...`);
+        io.emit("system-message", `${username} joined`);
 
     });
 
@@ -158,39 +180,25 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on("private-message", (data) => {
+    socket.on("typing", (username) => {
 
-        const targetSocket = connectedUsers[data.targetUser];
-
-        if(targetSocket){
-
-            io.to(targetSocket).emit("receive-private-message", {
-
-                user:data.user,
-
-                text:data.text
-
-            });
-
-        }
+        socket.broadcast.emit("typing-status", `${username} is typing...`);
 
     });
 
     socket.on("disconnect", () => {
 
-        onlineUsers--;
+        for(let user in connectedUsers){
 
-        io.emit("online-users", onlineUsers);
+            if(connectedUsers[user] === socket.id){
 
-        if(socket.username){
+                delete connectedUsers[user];
 
-            delete connectedUsers[socket.username];
-
-            io.emit("system-message", `${socket.username} left the chat`);
-
-            io.emit("user-list", Object.keys(connectedUsers));
+            }
 
         }
+
+        io.emit("user-list", Object.keys(connectedUsers));
 
     });
 
