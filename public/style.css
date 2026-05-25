@@ -348,3 +348,19 @@ body{
 
     cursor:pointer;
 }
+.logout-btn{
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:red;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-weight:bold;
+}

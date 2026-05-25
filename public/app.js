@@ -2,6 +2,26 @@ const socket = io();
 
 let currentUser = "";
 
+window.onload = () => {
+
+    const savedUser = localStorage.getItem("username");
+
+    if(savedUser){
+
+        currentUser = savedUser;
+
+        document.getElementById("auth-screen").style.display = "none";
+
+        document.getElementById("chat-screen").style.display = "flex";
+
+        document.getElementById("current-user").innerText = currentUser;
+
+        socket.emit("user-joined", currentUser);
+
+    }
+
+};
+
 const messages = document.getElementById("messages");
 
 const input = document.getElementById("message-input");
@@ -59,9 +79,19 @@ async function createAccount(){
 
     if(data.success){
 
-        showLogin();
+    localStorage.setItem("username", username);
 
-    }
+    currentUser = username;
+
+    document.getElementById("auth-screen").style.display = "none";
+
+    document.getElementById("chat-screen").style.display = "flex";
+
+    document.getElementById("current-user").innerText = currentUser;
+
+    socket.emit("user-joined", currentUser);
+
+}
 
 }
 
@@ -274,5 +304,12 @@ installBtn.addEventListener("click", async () => {
 if("serviceWorker" in navigator){
 
     navigator.serviceWorker.register("service-worker.js");
+
+}
+function logout(){
+
+    localStorage.removeItem("username");
+
+    location.reload();
 
 }
