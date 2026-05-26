@@ -1,7 +1,10 @@
 let selectedUser = "";
+
 const socket = io();
 
 let currentUser = "";
+
+/* AUTO LOGIN */
 
 window.onload = () => {
 
@@ -31,7 +34,9 @@ const sendBtn = document.getElementById("send-btn");
 
 const usersContainer = document.getElementById("users-container");
 
-/* LOGIN */
+/* =========================
+   LOGIN / REGISTER
+========================= */
 
 function showLogin(){
 
@@ -80,19 +85,19 @@ async function createAccount(){
 
     if(data.success){
 
-    localStorage.setItem("username", username);
+        localStorage.setItem("username", username);
 
-    currentUser = username;
+        currentUser = username;
 
-    document.getElementById("auth-screen").style.display = "none";
+        document.getElementById("auth-screen").style.display = "none";
 
-    document.getElementById("chat-screen").style.display = "flex";
+        document.getElementById("chat-screen").style.display = "flex";
 
-    document.getElementById("current-user").innerText = currentUser;
+        document.getElementById("current-user").innerText = currentUser;
 
-    socket.emit("user-joined", currentUser);
+        socket.emit("user-joined", currentUser);
 
-}
+    }
 
 }
 
@@ -127,6 +132,8 @@ async function login(){
 
     if(data.success){
 
+        localStorage.setItem("username", username);
+
         currentUser = username;
 
         document.getElementById("auth-screen").style.display = "none";
@@ -141,7 +148,9 @@ async function login(){
 
 }
 
-/* SEND */
+/* =========================
+   SEND MESSAGE
+========================= */
 
 sendBtn.addEventListener("click", sendMessage);
 
@@ -156,12 +165,6 @@ input.addEventListener("keypress", function(event){
 });
 
 function sendMessage(){
-
-    const text = input.value;
-
-    if(text.trim() === "") return;
-
-    function sendMessage(){
 
     const text = input.value;
 
@@ -189,8 +192,10 @@ function sendMessage(){
 
 }
 
+/* =========================
+   RECEIVE PRIVATE MESSAGE
+========================= */
 
-/* RECEIVE */
 socket.on("receive-private-message", (data) => {
 
     const div = document.createElement("div");
@@ -220,7 +225,9 @@ socket.on("receive-private-message", (data) => {
 
 });
 
-/* USERS */
+/* =========================
+   USER LIST
+========================= */
 
 socket.on("user-list", (users) => {
 
@@ -268,7 +275,9 @@ socket.on("user-list", (users) => {
 
 });
 
-/* SYSTEM */
+/* =========================
+   SYSTEM MESSAGE
+========================= */
 
 socket.on("system-message", (message) => {
 
@@ -282,7 +291,9 @@ socket.on("system-message", (message) => {
 
 });
 
-/* TYPING */
+/* =========================
+   TYPING STATUS
+========================= */
 
 input.addEventListener("input", () => {
 
@@ -302,7 +313,9 @@ socket.on("typing-status", (msg) => {
 
 });
 
-/* PWA */
+/* =========================
+   PWA INSTALL
+========================= */
 
 let deferredPrompt;
 
@@ -328,13 +341,20 @@ installBtn.addEventListener("click", async () => {
 
 });
 
-/* SERVICE WORKER */
+/* =========================
+   SERVICE WORKER
+========================= */
 
 if("serviceWorker" in navigator){
 
     navigator.serviceWorker.register("service-worker.js");
 
 }
+
+/* =========================
+   LOGOUT
+========================= */
+
 function logout(){
 
     localStorage.removeItem("username");
