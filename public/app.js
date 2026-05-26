@@ -1,3 +1,4 @@
+let selectedUser = "";
 const socket = io();
 
 let currentUser = "";
@@ -160,9 +161,25 @@ function sendMessage(){
 
     if(text.trim() === "") return;
 
-    socket.emit("send-message", {
+    function sendMessage(){
+
+    const text = input.value;
+
+    if(text.trim() === "") return;
+
+    if(selectedUser === ""){
+
+        alert("Select user first");
+
+        return;
+
+    }
+
+    socket.emit("private-message", {
 
         user:currentUser,
+
+        targetUser:selectedUser,
 
         text:text
 
@@ -172,9 +189,9 @@ function sendMessage(){
 
 }
 
-/* RECEIVE */
 
-socket.on("receive-message", (data) => {
+/* RECEIVE */
+socket.on("receive-private-message", (data) => {
 
     const div = document.createElement("div");
 
@@ -211,6 +228,8 @@ socket.on("user-list", (users) => {
 
     users.forEach((user) => {
 
+        if(user === currentUser) return;
+
         const div = document.createElement("div");
 
         div.classList.add("chat-user");
@@ -232,6 +251,16 @@ socket.on("user-list", (users) => {
             </div>
 
         `;
+
+        div.addEventListener("click", () => {
+
+            selectedUser = user;
+
+            document.getElementById("current-user").innerText = user;
+
+            messages.innerHTML = "";
+
+        });
 
         usersContainer.appendChild(div);
 

@@ -162,11 +162,31 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on("send-message", (data) => {
+    socket.on("private-message", (data) => {
 
-        io.emit("receive-message", data);
+    const targetSocketId = connectedUsers[data.targetUser];
+
+    if(targetSocketId){
+
+        io.to(targetSocketId).emit("receive-private-message", {
+
+            user:data.user,
+
+            text:data.text
+
+        });
+
+    }
+
+    io.to(socket.id).emit("receive-private-message", {
+
+        user:data.user,
+
+        text:data.text
 
     });
+
+});
 
     socket.on("typing", (username) => {
 
