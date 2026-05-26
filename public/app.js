@@ -329,17 +329,21 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 });
 
-installBtn.addEventListener("click", async () => {
+if(installBtn){
 
-    if(deferredPrompt){
+    installBtn.addEventListener("click", async () => {
 
-        deferredPrompt.prompt();
+        if(deferredPrompt){
 
-        deferredPrompt = null;
+            deferredPrompt.prompt();
 
-    }
+            deferredPrompt = null;
 
-});
+        }
+
+    });
+
+}
 
 /* =========================
    SERVICE WORKER

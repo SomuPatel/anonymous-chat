@@ -1,15 +1,10 @@
 require("dotenv").config();
 
 const express = require("express");
-
 const http = require("http");
-
 const { Server } = require("socket.io");
-
 const mongoose = require("mongoose");
-
 const bcrypt = require("bcrypt");
-
 const path = require("path");
 
 const app = express();
@@ -158,39 +153,31 @@ io.on("connection", (socket) => {
 
         io.emit("user-list", Object.keys(connectedUsers));
 
-        io.emit("system-message", `${username} joined`);
-
     });
 
     socket.on("private-message", (data) => {
 
-    const targetSocketId = connectedUsers[data.targetUser];
+        const targetSocketId = connectedUsers[data.targetUser];
 
-    if(targetSocketId){
+        if(targetSocketId){
 
-        io.to(targetSocketId).emit("receive-private-message", {
+            io.to(targetSocketId).emit("receive-private-message", {
+
+                user:data.user,
+
+                text:data.text
+
+            });
+
+        }
+
+        io.to(socket.id).emit("receive-private-message", {
 
             user:data.user,
 
             text:data.text
 
         });
-
-    }
-
-    io.to(socket.id).emit("receive-private-message", {
-
-        user:data.user,
-
-        text:data.text
-
-    });
-
-});
-
-    socket.on("typing", (username) => {
-
-        socket.broadcast.emit("typing-status", `${username} is typing...`);
 
     });
 
